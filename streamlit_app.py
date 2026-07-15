@@ -17,37 +17,126 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS for a premium dark-mode aesthetic
+# Custom CSS for a premium glassmorphism aesthetic
 st.markdown("""
     <style>
+    /* Hide Streamlit default UI elements */
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    header {visibility: hidden;}
+    
+    /* Main App Background */
     .stApp {
-        background-color: #0a0f1e;
+        background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
         color: #e2e8f0;
     }
-    .stMetric {
-        background: rgba(30, 41, 59, 0.5);
-        padding: 15px;
-        border-radius: 10px;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        text-align: center;
+    
+    /* Sidebar Styling */
+    section[data-testid="stSidebar"] {
+        background-color: rgba(15, 23, 42, 0.6) !important;
+        backdrop-filter: blur(12px) !important;
+        border-right: 1px solid rgba(255, 255, 255, 0.05);
     }
-    .metric-value {
-        font-size: 24px;
-        font-weight: 700;
-        color: #8b5cf6;
-    }
-    .health-banner {
+    
+    /* Glassmorphism Metric Cards */
+    [data-testid="stMetric"] {
+        background: rgba(30, 41, 59, 0.4);
+        backdrop-filter: blur(10px);
         padding: 20px;
-        border-radius: 12px;
+        border-radius: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
         text-align: center;
-        margin-top: 20px;
-        margin-bottom: 20px;
-        font-weight: bold;
-        font-size: 22px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
-    .health-minor { background: rgba(234, 179, 8, 0.2); color: #facc15; border: 1px solid #facc15; }
-    .health-moderate { background: rgba(249, 115, 22, 0.2); color: #fb923c; border: 1px solid #fb923c; }
-    .health-critical { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid #f87171; }
+    [data-testid="stMetric"]:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 40px 0 rgba(139, 92, 246, 0.3);
+        border: 1px solid rgba(139, 92, 246, 0.5);
+    }
+    
+    /* Metric Value Text */
+    [data-testid="stMetricValue"] {
+        font-size: 26px !important;
+        font-weight: 800 !important;
+        background: linear-gradient(90deg, #a78bfa, #c084fc);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        white-space: nowrap !important;
+        overflow: visible !important;
+    }
+    
+    [data-testid="stMetricLabel"] {
+        white-space: nowrap !important;
+        font-size: 14px !important;
+    }
+    
+    /* Headers */
+    h1 {
+        text-align: center !important;
+        background: linear-gradient(90deg, #c084fc, #818cf8);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-weight: 900 !important;
+        padding-bottom: 20px;
+    }
+    
+    /* Health Banners */
+    .health-banner {
+        padding: 25px;
+        border-radius: 16px;
+        text-align: center;
+        margin-top: 25px;
+        margin-bottom: 30px;
+        font-weight: 800;
+        font-size: 26px;
+        letter-spacing: 1px;
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+        backdrop-filter: blur(10px);
+    }
+    .health-minor { 
+        background: rgba(234, 179, 8, 0.15); 
+        color: #fde047; 
+        border: 1px solid rgba(250, 204, 21, 0.5); 
+    }
+    .health-moderate { 
+        background: rgba(249, 115, 22, 0.15); 
+        color: #fdba74; 
+        border: 1px solid rgba(251, 146, 60, 0.5); 
+    }
+    .health-critical { 
+        background: rgba(239, 68, 68, 0.15); 
+        color: #fca5a5; 
+        border: 1px solid rgba(248, 113, 113, 0.5); 
+        animation: pulse 2s infinite;
+    }
+    
+    /* Critical Pulse Animation */
+    @keyframes pulse {
+        0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+        70% { box-shadow: 0 0 0 15px rgba(239, 68, 68, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+    }
+    
+    /* Custom Tabs */
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 10px;
+        background-color: rgba(15, 23, 42, 0.4);
+        padding: 10px;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .stTabs [data-baseweb="tab"] {
+        background-color: transparent !important;
+        border-radius: 8px !important;
+        color: #94a3b8 !important;
+        padding: 10px 20px !important;
+    }
+    .stTabs [aria-selected="true"] {
+        background-color: rgba(139, 92, 246, 0.2) !important;
+        color: #c084fc !important;
+        border: 1px solid rgba(139, 92, 246, 0.5) !important;
+    }
     </style>
 """, unsafe_allow_html=True)
 
@@ -246,7 +335,8 @@ if uploaded_file is not None:
     with col4: st.metric("Crack Area", f"{crack_ratio:.2f}%")
     with col5: st.metric("Damage", f"{damage_score:.0f} pts")
 
-    tab1, tab2, tab3 = st.tabs(["🔴 AI Overlay", "🌡️ Heatmap", "📷 Original"])
+    tab1, tab2, tab3, tab4 = st.tabs(["🔴 AI Overlay", "⚫ Binary Mask", "🌡️ Heatmap", "📷 Original"])
     with tab1: st.image(blended, use_container_width=True)
-    with tab2: st.image(heatmap_blend, use_container_width=True)
-    with tab3: st.image(img_process, use_container_width=True)
+    with tab2: st.image(mask_uint8_raw, use_container_width=True, clamp=True)
+    with tab3: st.image(heatmap_blend, use_container_width=True)
+    with tab4: st.image(img_process, use_container_width=True)
