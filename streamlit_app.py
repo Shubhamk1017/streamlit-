@@ -23,7 +23,6 @@ st.markdown("""
     /* Hide Streamlit default UI elements */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
-    header {visibility: hidden;}
     
     /* Main App Background */
     .stApp {
